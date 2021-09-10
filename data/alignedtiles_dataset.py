@@ -96,8 +96,11 @@ class AlignedTilesDataset(BaseDataset):
         A_tile, A_path = self.A_tiles[index]
         B_tile, B_path = self.B_tiles[index]
         tmpA = Image.open(A_path)
-        A = Image.new('RGB', tmpA.size, (255, 255, 255))
-        A.paste(tmpA, mask=tmpA.split()[3])
+        if tmpA.mode == 'RGBA':
+            A = Image.new('RGB', tmpA.size, (255, 255, 255))
+            A.paste(tmpA, mask=tmpA.split()[3])
+        else:
+            A = tmpA
         A = self.transform(A)    # needs to be a tensor
         B = self.transform(Image.open(B_path).convert('RGB'))    # needs to be a tensor
         A_path = '_'.join(A_path.split('/')[-3:])
